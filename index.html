@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Radio choucroute.club</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="card">
+    <header class="top">
+      <h1>Choucroute Radio</h1>
+      <div class="clock" id="clock">--:--:--</div>
+    </header>
+
+    <p class="track" id="track">
+      <span class="label">Titre :</span>
+      <span class="value muted">chargement…</span>
+    </p>
+
+    <div class="controls">
+      <button id="btn" type="button">▶︎ Play</button>
+      <audio id="audio" preload="none" crossorigin="anonymous"></audio>
+    </div>
+
+    <script src="script.js"></script>
+  </main>
+</body>
+</html>
