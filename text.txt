@@ -1,0 +1,2 @@
+rsync -av --progress ~/Music/Choucroute/morning/
+malo.chaperon@malopi:/home/malo.chaperon/radio/music/morning/
