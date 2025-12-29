@@ -94,7 +94,6 @@ main {
     height: auto; /* Maintain aspect ratio */
     object-fit: cover;
     animation: rotate 10s linear infinite;
-    border: solid 2px var(--black);
     pointer-events: none;
 }
 
