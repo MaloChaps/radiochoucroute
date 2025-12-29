@@ -1,30 +1,164 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Radio choucroute.club</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Choucroute — Radio</title>
+
+  <link rel="stylesheet" href="public/style.css">
+  <link rel="stylesheet" href="public/fonts.css">
+  <link rel="stylesheet" href="public/dist.css">
 </head>
 
 <body>
-  <main class="card">
-    <header class="top">
-      <h1>Choucroute Radio</h1>
-      <div class="clock" id="clock">--:--:--</div>
-    </header>
+  <main>
+    <h1 class="body-18 uppercase abcFont-bold">Choucroute Radio</h1>
 
-    <p class="track" id="track">
-      <span class="label">Titre :</span>
-      <span class="value muted">chargement…</span>
-    </p>
+    <div class="player">
+      <a id="playBtn" class="body-16 uppercase abcFont-bold mg-b-8" style="cursor:pointer;">
+        Play
+      </a>
 
-    <div class="controls">
-      <button id="btn" type="button">▶︎ Play</button>
-      <audio id="audio" preload="none" crossorigin="anonymous"></audio>
+      <div>
+        <img src="public/source/img/cd-rom.png" alt="">
+      </div>
+
+      <div>
+        <p id="trackTitle" class="body-16 uppercase abcFont-bold">—</p>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <div>
+      <p class="body-16 uppercase abcFont-bold" id="paris-time">
+        Tuesday, February 11, Paris, 20:30:58
+      </p>
+    </div>
+
+    <!-- Audio stream -->
+    <!-- ✅ preload=metadata = démarrage plus rapide -->
+    <audio id="audio" preload="metadata" crossorigin="anonymous" playsinline>
+      <source src="https://radio.choucroute.club/live.mp3" type="audio/mpeg">
+    </audio>
   </main>
+
+  <script>
+    function updateParisTime() {
+      const options = {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        timeZone: 'Europe/Paris'
+      };
+      const parisTime = new Date().toLocaleDateString('en-US', options);
+      document.getElementById('paris-time').textContent = parisTime + ', Paris';
+    }
+
+    updateParisTime();
+    setInterval(updateParisTime, 1000);
+  </script>
+
+  <script>
+    const audio = document.getElementById("audio");
+    const playBtn = document.getElementById("playBtn");
+    const trackTitle = document.getElementById("trackTitle");
+
+    const META_URL = "https://radio.choucroute.club/status-json.xsl";
+
+    function fixMojibake(s) {
+      if (!s || !/[ÃÂ]/.test(s)) return s;
+      try {
+        const bytes = Uint8Array.from([...s].map(c => c.charCodeAt(0)));
+        return new TextDecoder("utf-8").decode(bytes);
+      } catch {
+        return s;
+      }
+    }
+
+    function setButton(state) {
+      switch (state) {
+        case "loading":
+          playBtn.textContent = "Loading…";
+          playBtn.style.opacity = "0.6";
+          playBtn.style.pointerEvents = "none";
+          break;
+        case "playing":
+          playBtn.textContent = "Pause";
+          playBtn.style.opacity = "1";
+          playBtn.style.pointerEvents = "auto";
+          break;
+        case "paused":
+        default:
+          playBtn.textContent = "Play";
+          playBtn.style.opacity = "1";
+          playBtn.style.pointerEvents = "auto";
+      }
+    }
+
+    setButton("paused");
+
+    // ✅ Warmup: prépare la connexion dès que l'utilisateur touche la page
+    // (ça réduit le délai perçu au clic sur Play)
+    let warmed = false;
+    function warmUp() {
+      if (warmed) return;
+      warmed = true;
+      // déclenche le chargement du flux sans jouer
+      audio.muted = true;
+      const p = audio.play();
+      if (p && typeof p.then === "function") {
+        p.then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.muted = false;
+        }).catch(() => {
+          // pas grave si le navigateur refuse, on aura quand même preload=metadata
+          audio.muted = false;
+        });
+      } else {
+        audio.muted = false;
+      }
+    }
+    document.addEventListener("pointerdown", warmUp, { once: true });
+    document.addEventListener("keydown", warmUp, { once: true });
+
+    playBtn.addEventListener("click", async () => {
+      if (!audio.paused) {
+        audio.pause();
+        return;
+      }
+      try {
+        setButton("loading");
+        // ❌ plus de audio.load() : ça rallonge
+        await audio.play();
+      } catch (e) {
+        console.error("Play error", e);
+        setButton("paused");
+      }
+    });
+
+    audio.addEventListener("playing", () => setButton("playing"));
+    audio.addEventListener("pause", () => setButton("paused"));
+    audio.addEventListener("waiting", () => setButton("loading"));
+    audio.addEventListener("stalled", () => setButton("loading"));
+    audio.addEventListener("error", () => setButton("paused"));
+
+    function pickSource(icestats) {
+      const s = icestats?.source;
+      if (!s) return null;
+      return Array.isArray(s) ? s[0] : s;
+    }
+
+    async function loadTitle() {
+      try {
+        const res = await fetch(META_URL, { cache: "no-store" });
+        const data = await res.json();
+        const src = pickSource(data.icestats);
+        if (!src?.title) return;
+        trackTitle.textContent = fixMojibake(src.title);
+      } catch {}
+    }
+
+    loadTitle();
+    setInterval(loadTitle, 5000);
+  </script>
 </body>
 </html>

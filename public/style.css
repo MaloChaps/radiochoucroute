@@ -1,0 +1,115 @@
+:root {
+    --red: #C12A2C;
+    --cream: #F2F2D8;
+    --blue: #4461B0;
+    --black: #111111;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+}
+
+
+/* fonts */
+.abcFont-bold {
+    font-family: 'abcFont-bold', sans-serif;
+}
+
+.abcFont-regular {
+    font-family: 'abcFont-regular', sans-serif;
+}
+
+/* style */
+.uppercase {
+    text-transform: uppercase;
+}
+
+.body-20 {
+    font-size: 20px;
+    letter-spacing: -0.2px;
+    line-height: 110%
+}
+
+.body-18 {
+    font-size: 18px;
+    letter-spacing: -0.2px;
+    line-height: 110%
+}
+
+.body-16 {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+    line-height: 110%
+}
+
+.body-12 {
+    font-size: 12px;
+    letter-spacing: -0.2px;
+    line-height: 110%
+}
+
+.body-8 {
+    font-size: 8px;
+    letter-spacing: -0.2px;
+    line-height: 110%
+}
+
+
+main {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--red);
+    padding: 16px; /* Added padding for smaller screens */
+    box-sizing: border-box; /* Ensure padding is included in width/height */
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.player > a{
+    padding: 12px;
+}
+
+.player > div img {
+    width: 100%; /* Make image responsive */
+    max-width: 500px; /* Limit max width */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover;
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .player > div img {
+        width: 90%; /* Adjust image width for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 8px; /* Reduce padding for very small screens */
+    }
+}

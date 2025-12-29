@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'abcFont-bold';
+    src: url('public/source/fonts/ABCDiatype-Bold-Trial.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'abcFont-regular';
+    src: url('public/source/fonts/ABCDiatype-Regular-Trial.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}

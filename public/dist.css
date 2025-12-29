@@ -1,0 +1,20 @@
+/* ===== Margin Top ===== */
+.mg-t-4  { margin-top: 4px; }
+.mg-t-8  { margin-top: 8px; }
+.mg-t-12 { margin-top: 12px; }
+.mg-t-16 { margin-top: 16px; }
+.mg-t-20 { margin-top: 20px; }
+
+/* ===== Margin Bottom ===== */
+.mg-b-4  { margin-bottom: 4px; }
+.mg-b-8  { margin-bottom: 8px; }
+.mg-b-12 { margin-bottom: 12px; }
+.mg-b-16 { margin-bottom: 16px; }
+.mg-b-20 { margin-bottom: 20px; }
+
+/* ===== Margin Top & Bottom ===== */
+.mg-y-4  { margin-top: 4px;  margin-bottom: 4px; }
+.mg-y-8  { margin-top: 8px;  margin-bottom: 8px; }
+.mg-y-12 { margin-top: 12px; margin-bottom: 12px; }
+.mg-y-16 { margin-top: 16px; margin-bottom: 16px; }
+.mg-y-20 { margin-top: 20px; margin-bottom: 20px; }
