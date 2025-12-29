@@ -11,30 +11,30 @@
 
 html,
 body {
-    padding: 0;
+    overscroll-behavior: none;
     margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--red);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: env(safe-area-inset-top);
+    /* ton rouge */
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background: var(--red); /* ton rouge */
-}
 
 /* Body plein écran */
 body {
-  background: var(--red);
+    background: var(--red);
 }
 
 /* Empêche le blanc lors du scroll/bounce (iOS) */
 html {
-  background-color: var(--red);
+    background-color: var(--red);
 }
 
 /* Optionnel mais recommandé */
 main {
-  min-height: 100vh;
+    min-height: 100vh;
 }
 
 
@@ -54,7 +54,7 @@ main {
 
 .text-center {
     text-align: center;
-}   
+}
 
 .body-20 {
     font-size: 20px;
@@ -95,8 +95,10 @@ main {
     justify-content: space-between;
     align-items: center;
     background-color: var(--red);
-    padding: 16px; /* Added padding for smaller screens */
-    box-sizing: border-box; /* Ensure padding is included in width/height */
+    padding: 16px;
+    /* Added padding for smaller screens */
+    box-sizing: border-box;
+    /* Ensure padding is included in width/height */
 }
 
 .player {
@@ -106,17 +108,20 @@ main {
     gap: 8px;
 }
 
-#playBtn{
+#playBtn {
     text-decoration: none;
     color: var(--black);
     padding: 8px 12px;
 }
 
 
-.player > div img {
-    width: 100%; /* Make image responsive */
-    max-width: 500px; /* Limit max width */
-    height: auto; /* Maintain aspect ratio */
+.player>div img {
+    width: 100%;
+    /* Make image responsive */
+    max-width: 500px;
+    /* Limit max width */
+    height: auto;
+    /* Maintain aspect ratio */
     object-fit: cover;
     animation: rotate 10s linear infinite;
     pointer-events: none;
@@ -127,6 +132,7 @@ main {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -134,14 +140,17 @@ main {
 
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
-    .player > div img {
-       width: 100%; /* Make image responsive */
-    max-width: 272px; /* Limit max width */
+    .player>div img {
+        width: 100%;
+        /* Make image responsive */
+        max-width: 272px;
+        /* Limit max width */
     }
 }
 
 @media (max-width: 480px) {
     main {
-        padding: 8px; /* Reduce padding for very small screens */
+        padding: 8px;
+        /* Reduce padding for very small screens */
     }
 }
