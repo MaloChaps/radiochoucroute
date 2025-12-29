@@ -30,6 +30,10 @@ body {
     text-transform: uppercase;
 }
 
+.text-center {
+    text-align: center;
+}   
+
 .body-20 {
     font-size: 20px;
     letter-spacing: -0.2px;
@@ -85,7 +89,6 @@ main {
     color: var(--black);
     padding: 8px 12px;
 }
-
 
 
 .player > div img {
