@@ -16,13 +16,9 @@
         <h1 class="body-18 uppercase abcFont-bold">Choucroute Radio</h1>
 
         <div class="player">
-            <a id="playBtn" href="#" role="button" class="body-16 text-center uppercase abcFont-bold mg-b-8">
-                Play
-            </a>
+            <a id="playBtn" href="#" role="button" class="body-16 text-center uppercase abcFont-bold mg-b-8">Play</a>
 
-            <div>
-                <img src="public/source/img/cd-rom.png" alt="">
-            </div>
+            <div><img src="public/source/img/cd-rom.png" alt=""></div>
 
             <div>
                 <p id="trackTitle" class="body-16 text-center uppercase abcFont-bold">—</p>
@@ -30,13 +26,11 @@
         </div>
 
         <div>
-            <p class="body-16 text-center uppercase abcFont-bold" id="paris-time">
-                Tuesday, February 11, Paris, 20:30:58
-            </p>
+            <p class="body-16 text-center uppercase abcFont-bold" id="paris-time"> Tuesday, February 11, <br> Paris,
+                20:30:58</p>
         </div>
 
         <!-- Audio stream -->
-        <!-- ✅ preload=metadata = démarrage plus rapide -->
         <audio id="audio" preload="metadata" crossorigin="anonymous" playsinline>
             <source src="https://radio.choucroute.club/live.mp3" type="audio/mpeg">
         </audio>
@@ -55,9 +49,7 @@
 
         updateParisTime();
         setInterval(updateParisTime, 1000);
-    </script>
 
-    <script>
         const audio = document.getElementById("audio");
         const playBtn = document.getElementById("playBtn");
         const trackTitle = document.getElementById("trackTitle");
@@ -79,30 +71,27 @@
                 case "loading":
                     playBtn.textContent = "Loading…";
                     playBtn.style.opacity = "0.6";
-                    playBtn.style.pointerEvents = "none";
                     break;
                 case "playing":
                     playBtn.textContent = "Pause";
                     playBtn.style.opacity = "1";
-                    playBtn.style.pointerEvents = "auto";
                     break;
                 case "paused":
                 default:
                     playBtn.textContent = "Play";
                     playBtn.style.opacity = "1";
-                    playBtn.style.pointerEvents = "auto";
             }
         }
 
+
         setButton("paused");
 
-        // ✅ Warmup: prépare la connexion dès que l'utilisateur touche la page
-        // (ça réduit le délai perçu au clic sur Play)
+        // ✅ Warmup
         let warmed = false;
         function warmUp() {
             if (warmed) return;
             warmed = true;
-            // déclenche le chargement du flux sans jouer
+
             audio.muted = true;
             const p = audio.play();
             if (p && typeof p.then === "function") {
@@ -111,7 +100,6 @@
                     audio.currentTime = 0;
                     audio.muted = false;
                 }).catch(() => {
-                    // pas grave si le navigateur refuse, on aura quand même preload=metadata
                     audio.muted = false;
                 });
             } else {
@@ -121,31 +109,78 @@
         document.addEventListener("pointerdown", warmUp, { once: true });
         document.addEventListener("keydown", warmUp, { once: true });
 
-        playBtn.addEventListener("pointerup", async (e) => {
+        /* =========================
+           ✅ AUTO-RECONNECT LOGIC
+        ========================== */
+        let shouldBePlaying = false;
+        let retryTimer = null;
+
+        function tryPlay(delayMs = 300) {
+            clearTimeout(retryTimer);
+            retryTimer = setTimeout(async () => {
+                if (!shouldBePlaying) return;
+
+                try {
+                    await audio.play();
+                    // si ça marche, l'event "playing" mettra le bouton à jour
+                } catch (e) {
+                    // réessaie (stream en train de se reconnecter côté Icecast)
+                    tryPlay(800);
+                }
+            }, delayMs);
+        }
+
+        playBtn.addEventListener("pointerup", (e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            if (!audio.paused) {
+            // toggle intention
+            shouldBePlaying = audio.paused; // si c'est paused -> on veut jouer, sinon on veut arrêter
+
+            if (!shouldBePlaying) {
                 audio.pause();
                 return;
             }
 
-            try {
+            setButton("loading");
+            tryPlay(50); // très rapide, réduit le "lag" ressenti
+        });
+
+        /* ===== Audio events ===== */
+        audio.addEventListener("playing", () => setButton("playing"));
+
+        audio.addEventListener("pause", () => {
+            if (!shouldBePlaying) setButton("paused");
+        });
+
+        audio.addEventListener("waiting", () => {
+            if (shouldBePlaying) setButton("loading");
+        });
+
+        audio.addEventListener("stalled", () => {
+            if (shouldBePlaying) {
                 setButton("loading");
-                await audio.play();
-            } catch (err) {
-                console.error("Play error", err);
+                tryPlay(500);
+            }
+        });
+
+        audio.addEventListener("ended", () => {
+            if (shouldBePlaying) {
+                setButton("loading");
+                tryPlay(500);
+            }
+        });
+
+        audio.addEventListener("error", () => {
+            if (shouldBePlaying) {
+                setButton("loading");
+                tryPlay(800);
+            } else {
                 setButton("paused");
             }
         });
 
-
-        audio.addEventListener("playing", () => setButton("playing"));
-        audio.addEventListener("pause", () => setButton("paused"));
-        audio.addEventListener("waiting", () => setButton("loading"));
-        audio.addEventListener("stalled", () => setButton("loading"));
-        audio.addEventListener("error", () => setButton("paused"));
-
+        /* ===== Metadata ===== */
         function pickSource(icestats) {
             const s = icestats?.source;
             if (!s) return null;
@@ -165,6 +200,7 @@
         loadTitle();
         setInterval(loadTitle, 5000);
     </script>
+
 </body>
 
 </html>
