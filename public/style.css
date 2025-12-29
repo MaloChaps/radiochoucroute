@@ -81,8 +81,12 @@ main {
 }
 
 .player > a{
-    padding: 12px;
+    text-decoration: none;
+    color: var(--black);
+    padding: 8px 12px;
 }
+
+
 
 .player > div img {
     width: 100%; /* Make image responsive */
@@ -90,6 +94,8 @@ main {
     height: auto; /* Maintain aspect ratio */
     object-fit: cover;
     animation: rotate 10s linear infinite;
+    border: solid 2px var(--black);
+    pointer-events: none;
 }
 
 @keyframes rotate {
