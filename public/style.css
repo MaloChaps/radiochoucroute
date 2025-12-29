@@ -80,7 +80,7 @@ main {
     gap: 8px;
 }
 
-.player > a{
+#playBtn{
     text-decoration: none;
     color: var(--black);
     padding: 8px 12px;
